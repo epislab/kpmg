@@ -1,8 +1,7 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)   
 @app.route('/')
-def login():
-
+def intro():
    return render_template("auth/login.html")
 
 @app.route('/home')
@@ -10,25 +9,55 @@ def home():
    print("😎홈페이지로 이동")
    return render_template("index.html")
 
-@app.route('/plus')
-def plus():
-   print("➕더하기연산")
-   return render_template("calculator/plus.html")
 
-@app.route('/minus')
-def minus():
-   print("➖더하기연산")
-   return render_template("calculator/minus.html")
+@app.route('/login', methods=["post"])
+def login():
+   print("😎로그인 알고리즘")
+   username = request.form.get('username')
+   password = request.form.get('password')
+   print("🔑username:", username)
+   print("🍳password:", password)
+   if username == "hong" and password == '1234':
+    print("😊로그인 성공")
+    return redirect(url_for('home'))
+   else:
+    print("😫로그인 실패")
+    return redirect(url_for('intro'))
+   
 
-@app.route('/multiple')
-def multiple():
-   print("✖️곱셈연산")
-   return render_template("calculator/multiple.html")
 
-@app.route('/divide')
-def divide():
-   print("➗나눗셈연산")
-   return render_template("calculator/divide.html")
+@app.route('/calc',methods=["POST", "GET"])
+def calc():
+   print("🦉전송된 데이터 방식 : ", request.method)
+   
+   if request.method == "POST":
+      print("🥷POST 방식으로 전송된 데이터")
+      num1 = request.form.get('num1')
+      num2 = request.form.get('num2')
+      opcode = request.form.get('opcode')
+      
+      print("num1:", num1)
+      print("num2:", num2)
+      print("opcode:", opcode)
+      if opcode == "+":
+         num3 = int(num1) + int(num2)
+      elif opcode == "-":
+         num3 = int(num1) - int(num2)
+      elif opcode == "*":
+         num3 = int(num1) * int(num2)
+      elif opcode == "/":
+         num3 = int(num1) / int(num2)
+      else:
+         num3 = "연사자가 잘못되었음"
+      
+      print(f"{num1}{opcode}{num2}={num3}")
+      print("😊플러스 성공")
+      return render_template("calculator/calc.html", 
+                           num1 = num1,opcode = opcode, 
+                           num2 = num2, num3 = num3)
+   else:
+      print("🧑‍🚒GET 방식으로 전송된 데이터")
+      return render_template("calculator/calc.html")
 
 
 @app.route('/manufacture_fin_review')
@@ -83,6 +112,11 @@ def health_care_fin_Bot():
 def retail_finance_auto():
 
    return render_template("esg/esg_finimpact/retail_finance_auto.html")
+
+
+
+
+   
 
 
 
