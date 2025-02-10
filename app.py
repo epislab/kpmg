@@ -1,4 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
+from com.epislab.auth.login_controller import LoginController
+from com.epislab.auth.login_model import LoginModel
+from com.epislab.calculator.calc_controller import CalcController
+from com.epislab.calculator.calc_model import CalcModel
+
 app = Flask(__name__)   
 @app.route('/')
 def intro():
@@ -17,12 +22,15 @@ def login():
    password = request.form.get('password')
    print("🔑username:", username)
    print("🍳password:", password)
-   if username == "hong" and password == '1234':
-    print("😊로그인 성공")
-    return redirect(url_for('home'))
-   else:
-    print("😫로그인 실패")
-    return redirect(url_for('intro'))
+
+   login = LoginModel()
+   login.username = username
+   login.password = password
+   
+   controller = LoginController()
+   resp: LoginModel = controller.getResult(login)
+   
+   return redirect(url_for(resp.result))
    
 
 
@@ -35,26 +43,24 @@ def calc():
       num1 = request.form.get('num1')
       num2 = request.form.get('num2')
       opcode = request.form.get('opcode')
-      
+
       print("num1:", num1)
       print("num2:", num2)
       print("opcode:", opcode)
-      if opcode == "+":
-         num3 = int(num1) + int(num2)
-      elif opcode == "-":
-         num3 = int(num1) - int(num2)
-      elif opcode == "*":
-         num3 = int(num1) * int(num2)
-      elif opcode == "/":
-         num3 = int(num1) / int(num2)
-      else:
-         num3 = "연사자가 잘못되었음"
+
+      calc = CalcModel()
+      calc.num1 = int(num1)
+      calc.num2 = int(num2)
+      calc.opcode = opcode
+
+      controller = CalcController()
+      resp: CalcModel = controller.getResult(calc)
       
-      print(f"{num1}{opcode}{num2}={num3}")
+      print(f"{resp.num1}{resp.opcode}{resp.num2}={resp.result}")
       print("😊플러스 성공")
       return render_template("calculator/calc.html", 
-                           num1 = num1,opcode = opcode, 
-                           num2 = num2, num3 = num3)
+                           num1 = resp.num1,opcode = resp.opcode, 
+                           num2 = resp.num2, result = resp.result)
    else:
       print("🧑‍🚒GET 방식으로 전송된 데이터")
       return render_template("calculator/calc.html")
