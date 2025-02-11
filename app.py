@@ -14,25 +14,16 @@ def home():
    print("😎홈페이지로 이동")
    return render_template("index.html")
 
-
 @app.route('/login', methods=["post"])
 def login():
    print("😎로그인 알고리즘")
    username = request.form.get('username')
    password = request.form.get('password')
-   print("🔑username:", username)
-   print("🍳password:", password)
-
-   login = LoginModel()
-   login.username = username
-   login.password = password
    
-   controller = LoginController()
-   resp: LoginModel = controller.getResult(login)
+   controller = LoginController(username, password)
+   resp: LoginModel = controller.getResult()
    
    return redirect(url_for(resp.result))
-   
-
 
 @app.route('/calc',methods=["POST", "GET"])
 def calc():
@@ -44,27 +35,42 @@ def calc():
       num2 = request.form.get('num2')
       opcode = request.form.get('opcode')
 
-      print("num1:", num1)
-      print("num2:", num2)
-      print("opcode:", opcode)
-
-      calc = CalcModel()
-      calc.num1 = int(num1)
-      calc.num2 = int(num2)
-      calc.opcode = opcode
-
-      controller = CalcController()
-      resp: CalcModel = controller.getResult(calc)
+      controller = CalcController(num1=num1, opcode=opcode, num2=num2)
+      resp: CalcModel = controller.getResult()
       
-      print(f"{resp.num1}{resp.opcode}{resp.num2}={resp.result}")
-      print("😊플러스 성공")
+      render_html = '<h3>결과보기</h3>'
+      render_html += f"{resp.num1}{resp.opcode}{resp.num2}={resp.result}"
+
       return render_template("calculator/calc.html", 
-                           num1 = resp.num1,opcode = resp.opcode, 
-                           num2 = resp.num2, result = resp.result)
+                           render_html=render_html)
    else:
       print("🧑‍🚒GET 방식으로 전송된 데이터")
       return render_template("calculator/calc.html")
+   
+@app.route('/discount',methods=["POST", "GET"])
+def discount():
+   print("🦉전송된 데이터 방식 : ", request.method)
+   
+   if request.method == "POST":
+      print("🥷POST 방식으로 전송된 데이터")
+      
+      return render_template("calculator/discount.html")
+   else:
+      print("🧑‍🚒GET 방식으로 전송된 데이터")
+      return render_template("calculator/discount.html")
+   
 
+@app.route('/gugudan',methods=["POST", "GET"])
+def gugudan():
+   print("🦉전송된 데이터 방식 : ", request.method)
+   
+   if request.method == "POST":
+      print("🥷POST 방식으로 전송된 데이터")
+      
+      return render_template("calculator/gugudan.html")
+   else:
+      print("🧑‍🚒GET 방식으로 전송된 데이터")
+      return render_template("calculator/gugudan.html")
 
 @app.route('/manufacture_fin_review')
 def manufacture_fin_review():
@@ -81,9 +87,6 @@ def retail_finbot():
 
    return render_template("esg/finchat_reports/retail_finbot.html")
 
-
-
-
 @app.route('/energy_esg_collector')
 def energy_esg_collector():
 
@@ -98,11 +101,6 @@ def esg_fin_viz_analystics():
 def manufacture_esg_reporter():
 
    return render_template("esg/esg_analytics/manufacture_esg_reporter.html")
-
-
-
-
-
 
 @app.route('/build_finance_auto')
 def build_finance_auto():

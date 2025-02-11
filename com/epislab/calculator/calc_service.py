@@ -6,7 +6,7 @@ class CalcService:
     def __init__(self):
         pass
 
-    def execute(self, calc: CalcModel):
+    def execute(self, calc: CalcModel)-> CalcModel:
         num1 = calc.num1
         num2 = calc.num2
         opcode = calc.opcode
