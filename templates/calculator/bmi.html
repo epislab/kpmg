@@ -52,5 +52,7 @@
         
         <button type="submit">BMI 계산</button>
     </form>
+
+    {{ render_html | default('') | safe }}
 </body>
 </html>

@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
 from com.epislab.auth.login_controller import LoginController
 from com.epislab.auth.login_model import LoginModel
+from com.epislab.bmi.bmi_controller import BmiController
+from com.epislab.bmi.bmi_model import BmiModel
 from com.epislab.calculator.calc_controller import CalcController
 from com.epislab.calculator.calc_model import CalcModel
+from com.epislab.grade.grade_controller import GradeController
 
 app = Flask(__name__)   
 @app.route('/')
@@ -47,6 +50,28 @@ def calc():
       print("🧑‍🚒GET 방식으로 전송된 데이터")
       return render_template("calculator/calc.html")
    
+@app.route('/bmi',methods=["POST", "GET"])
+def bmi():
+   print("🦉전송된 데이터 방식 : ", request.method)
+   
+   if request.method == "POST":
+      print("🥷POST 방식으로 전송된 데이터")
+      height = request.form.get('height')
+      weight = request.form.get('weight')
+
+      controller = BmiController(height=height, weight=weight)
+      resp:BmiModel = controller.getResult()
+
+      
+      render_html = '<h3>결과보기</h3>'
+      render_html += f"{resp.height}cm {resp.weight}kg의 BMI는 {resp.result}"
+    
+      return render_template("calculator/bmi.html", 
+                           render_html=render_html)
+   else:
+      print("🧑‍🚒GET 방식으로 전송된 데이터")
+      return render_template("calculator/bmi.html")
+   
 @app.route('/discount',methods=["POST", "GET"])
 def discount():
    print("🦉전송된 데이터 방식 : ", request.method)
@@ -71,6 +96,32 @@ def gugudan():
    else:
       print("🧑‍🚒GET 방식으로 전송된 데이터")
       return render_template("calculator/gugudan.html")
+   
+@app.route('/grade',methods=["POST", "GET"])
+def grade():
+   print("🦉전송된 데이터 방식 : ", request.method)
+   
+   if request.method == "POST":
+      print("🥷POST 방식으로 전송된 데이터")
+      name = request.form.get('name')
+      korean = request.form.get('korean')
+      english = request.form.get('english')
+      math = request.form.get('math')
+      society = request.form.get('society')
+      science = request.form.get('science')
+
+      controller = GradeController(name=name, korean=korean, english=english, 
+                                   math=math, society=society, science=science)
+      resp = controller.getResult()
+      render_html = '<h3>결과보기</h3>'
+      render_html += f"{resp.name}님의 성적은 {resp.result}입니다."
+      
+    
+      return render_template("grade/grade.html", 
+                           render_html=render_html)
+   else:
+      print("🧑‍🚒GET 방식으로 전송된 데이터")
+      return render_template("grade/grade.html")
 
 @app.route('/manufacture_fin_review')
 def manufacture_fin_review():

@@ -56,6 +56,8 @@
         <button type="submit" name="action" value="selected">선택한 단 출력</button>
        
     </form>
+
+    {{ render_html | default('') | safe }}
 </body>
 </html>
 
